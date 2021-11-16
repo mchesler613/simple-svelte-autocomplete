@@ -10,6 +10,10 @@
   export let keywordsFieldName = labelFieldName;
   export let valueFieldName = undefined;
 
+  export function handleClick(e) {
+      onDocumentClick(e)
+  }
+
   export let labelFunction = function(item) {
     if (item === undefined || item === null) {
       return "";
@@ -634,7 +638,7 @@
 
   function onDocumentClick(e) {
     if (debug) {
-      console.log("onDocumentClick: " + JSON.stringify(e.composedPath()));
+      // console.log("onDocumentClick: " + JSON.stringify(e.composedPath()));
     }
     if (
       e
@@ -974,7 +978,9 @@
     max-width: 100%;
     position: relative;
     vertical-align: top;
-    height: 2.25em;
+    height: auto; /* 2.25em; */
+    width: 100%;
+    background: #fff;
   }
 
   .autocomplete:not(.hide-arrow):not(.is-loading)::after {
@@ -1094,10 +1100,21 @@
   }
 
   .autocomplete.is-multiple .input-container {
-    height: auto;
+    height: 2.0em; 
     box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.1);
     border-radius: 4px;
     border: 1px solid #b5b5b5;
+    padding-left: 0.4em;
+    padding-right: 0.4em;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    background-color: #fff;
+    width: 100%;
+  }
+
+  .autocomplete-chips-container {
+    height: auto;
     padding-left: 0.4em;
     padding-right: 0.4em;
     display: flex;
@@ -1110,10 +1127,18 @@
     display: flex;
     margin-top: 0.5em;
     margin-bottom: 0.3em;
+    border-top-left-radius: 25px;
+    border-bottom-left-radius: 25px;
+    background-color: #245297;
+    color: white;
   }
 
   .autocomplete.is-multiple .tag.is-delete {
     cursor: pointer;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 25px;
+    border-bottom-right-radius: 25px;
   }
 
   .autocomplete.is-multiple .tags {
@@ -1129,6 +1154,15 @@
     border: none;
     box-shadow: none;
     background: none;
+  }
+
+  .autocomplete-align-right {
+    text-align: right;
+  }
+
+  .autocomplete-kevala-clear-button {
+    border: 0;
+    background: 0;
   }
 </style>
 
@@ -1150,22 +1184,6 @@
     {/if}
   </select>
   <div class="input-container">
-    {#if multiple && selectedItem}
-      {#each selectedItem as tagItem}
-        <slot
-          name="tag"
-          label={safeLabelFunction(tagItem)}
-          item={tagItem}
-          {unselectItem}>
-          <div class="tags has-addons">
-            <span class="tag">{safeLabelFunction(tagItem)}</span>
-            <span
-              class="tag is-delete"
-              on:click|preventDefault={unselectItem(tagItem)} />
-          </div>
-        </slot>
-      {/each}
-    {/if}
     <input
       type="text"
       class="{inputClassName ? inputClassName : ''} input autocomplete-input"
@@ -1185,7 +1203,9 @@
       on:click={onInputClick}
       on:keypress={onKeyPress} />
     {#if clearable}
+      <!--
       <span on:click={clear} class="autocomplete-clear-button">&#10006;</span>
+      -->
     {/if}
   </div>
   <div
@@ -1236,6 +1256,27 @@
         <slot name="no-results" {noResultsText}>{noResultsText}</slot>
       </div>
     {/if}
+  </div>
+  <div class="autocomplete-chips-container">
+    {#if multiple && selectedItem}
+      {#each selectedItem as tagItem}
+        <slot
+          name="tag"
+          label={safeLabelFunction(tagItem)}
+          item={tagItem}
+          {unselectItem}>
+          <div class="tags has-addons">
+            <span class="tag">{safeLabelFunction(tagItem)}</span>
+            <span
+              class="tag is-delete"
+              on:click|preventDefault={unselectItem(tagItem)} />
+          </div>
+        </slot>
+      {/each}
+    {/if}
+  </div>
+  <div class="autocomplete-align-right">
+    <button on:click={clear} class="autocomplete-kevala-clear-button">Clear</button>
   </div>
 </div>
 

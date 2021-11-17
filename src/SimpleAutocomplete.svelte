@@ -149,7 +149,6 @@
   export let selectedItem = [];
   export let value = undefined;
   export let highlightedItem = undefined;
-  let lastSelectedItem = undefined;
 
   // --- Internal State ----
   const uniqueId = "sautocomplete-" + Math.floor(Math.random() * 1000);
@@ -285,8 +284,7 @@
   function onSelectedItemChanged() {
     value = valueFunction(selectedItem);
     // text = !multiple ? safeLabelFunction(selectedItem) : "";
-    // don't display selected item as text in input search bar
-    text = "";
+    text = !multiple ? safeLabelFunction(selectedItem[selectedItem.length-1]) : "";
 
     filteredListItems = listItems;
     onChange(selectedItem);
@@ -810,7 +808,7 @@
         );
       }
 
-      const index = findItemIndex(lastSelectedItem, filteredListItems);
+      const index = findItemIndex(selectedItem[selectedItem.length-1], filteredListItems);
       if (index >= 0) {
         highlightIndex = index;
         highlight();

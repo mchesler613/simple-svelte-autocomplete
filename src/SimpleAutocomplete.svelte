@@ -144,12 +144,9 @@
   // --- Public State ----
 
   // selected item state
-  // always a list whether single-select or multi-select
-  // export let selectedItem = multiple ? [] : undefined;
-  export let selectedItem = [];
+  export let selectedItem = multiple ? [] : undefined;
   export let value = undefined;
   export let highlightedItem = undefined;
-  let lastSelectedItem = undefined;
 
   // --- Internal State ----
   const uniqueId = "sautocomplete-" + Math.floor(Math.random() * 1000);
@@ -284,9 +281,7 @@
 
   function onSelectedItemChanged() {
     value = valueFunction(selectedItem);
-    // text = !multiple ? safeLabelFunction(selectedItem) : "";
-    // don't display selected item as text in input search bar
-    text = "";
+    text = !multiple ? safeLabelFunction(selectedItem) : "";
 
     filteredListItems = listItems;
     onChange(selectedItem);
@@ -539,16 +534,12 @@
     const newSelectedItem = listItem.item;
     if (beforeChange(selectedItem, newSelectedItem)) {
       // simple selection
-      // single selection produces tags (chips)
-      /*
       if (!multiple) {
         selectedItem = undefined; // triggers change even if the the same item is selected
         selectedItem = newSelectedItem;
       }
       // first selection of multiple ones
       else if (!selectedItem) {
-      */
-      if (!selectedItem) {
         selectedItem = [newSelectedItem];
       }
       // selecting something already selected => unselect it
@@ -772,9 +763,8 @@
     }
 
     onFocus();
-    if (multiple) {
-        resetListToAllItemsAndOpen();
-    }
+
+    resetListToAllItemsAndOpen();
   }
 
   function onBlurInternal() {
@@ -803,14 +793,14 @@
     open();
 
     // find selected item
-    if (selectedItem.length) {
+    if (selectedItem) {
       if (debug) {
         console.log(
           "Searching currently selected item: " + JSON.stringify(selectedItem)
         );
       }
 
-      const index = findItemIndex(lastSelectedItem, filteredListItems);
+      const index = findItemIndex(selectedItem, filteredListItems);
       if (index >= 0) {
         highlightIndex = index;
         highlight();
@@ -894,8 +884,7 @@
     }
 
     text = "";
-    // selectedItem = multiple ? [] : undefined;
-    selectedItem = [];
+    selectedItem = multiple ? [] : undefined;
 
     setTimeout(() => {
       input.focus();
@@ -1180,7 +1169,7 @@
 <div
   class="{className ? className : ''}
   {hideArrow || !items.length ? 'hide-arrow' : ''}
-  {'is-multiple'} autocomplete select is-fullwidth {uniqueId}"
+  {multiple ? 'is-multiple' : ''} autocomplete select is-fullwidth {uniqueId}"
   class:show-clear={clearable}
   class:is-loading={showLoadingIndicator && loading}>
   <select name={selectName} id={selectId} {multiple}>
@@ -1269,10 +1258,7 @@
     {/if}
   </div>
   <div class="autocomplete-chips-container">
-    <!--
     {#if multiple && selectedItem}
-    -->
-    {#if selectedItem}
       {#each selectedItem as tagItem}
         <slot
           name="tag"

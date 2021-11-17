@@ -4,3 +4,4 @@ public/bundle.*
 index.js
 index.mjs
 *.swp
+*.msc*
